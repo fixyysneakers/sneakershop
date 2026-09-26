@@ -1,11 +1,251 @@
-<!DOCTYPE html><html lang="pl"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>SneakerShop</title>
-<style>body{font-family:Arial;margin:0;background:#f4f4f4}header{background:#111;color:#fff;padding:18px}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;padding:20px}.card{background:#fff;border-radius:12px;padding:12px}img{width:100%;height:220px;object-fit:cover;border-radius:8px}.btn{display:block;background:#111;color:#fff;text-align:center;padding:10px;border-radius:8px;text-decoration:none}.card img{width:100%;height:250px;object-fit:contain;display:block}</style>
-</head><body><header><h2>👟 SneakerShop</h2></header><div id="grid" class="grid"></div>
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FIXY SNEAKERS</title>
+
+<style>
+*{
+  box-sizing:border-box;
+}
+
+body{
+  margin:0;
+  font-family:Arial,Helvetica,sans-serif;
+  background:#f5f5f5;
+  color:#111;
+}
+
+/* NAGŁÓWEK */
+
+header{
+  background:#0b0b0b;
+  color:white;
+  padding:28px 20px;
+  text-align:center;
+}
+
+header h1{
+  margin:0;
+  font-size:32px;
+  letter-spacing:2px;
+}
+
+header p{
+  margin:8px 0 0;
+  color:#aaa;
+  font-size:14px;
+}
+
+/* TYTUŁ */
+
+.section-title{
+  text-align:center;
+  padding:30px 20px 10px;
+}
+
+.section-title h2{
+  margin:0;
+  font-size:25px;
+}
+
+.section-title p{
+  color:#777;
+  margin:8px 0 0;
+}
+
+/* PRODUKTY */
+
+.grid{
+  max-width:1200px;
+  margin:auto;
+  padding:25px 20px 50px;
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+  gap:22px;
+}
+
+/* KARTA */
+
+.card{
+  background:white;
+  border-radius:18px;
+  padding:14px;
+  box-shadow:0 5px 20px rgba(0,0,0,.08);
+  transition:transform .2s,box-shadow .2s;
+  overflow:hidden;
+}
+
+.card:hover{
+  transform:translateY(-5px);
+  box-shadow:0 10px 30px rgba(0,0,0,.14);
+}
+
+/* ZDJĘCIE */
+
+.card img{
+  width:100%;
+  height:270px;
+  object-fit:contain;
+  display:block;
+  border-radius:12px;
+  background:#fafafa;
+}
+
+/* INFORMACJE */
+
+.card h3{
+  font-size:18px;
+  margin:16px 4px 8px;
+}
+
+.price{
+  font-size:22px;
+  font-weight:bold;
+  margin:0 4px 8px;
+}
+
+.size{
+  color:#666;
+  margin:0 4px 15px;
+}
+
+/* PRZYCISK */
+
+.btn{
+  display:block;
+  background:#111;
+  color:white;
+  text-align:center;
+  padding:13px;
+  border-radius:10px;
+  text-decoration:none;
+  font-weight:bold;
+  transition:background .2s;
+}
+
+.btn:hover{
+  background:#333;
+}
+
+/* STOPKA */
+
+footer{
+  background:#0b0b0b;
+  color:#aaa;
+  text-align:center;
+  padding:25px 15px;
+  font-size:13px;
+}
+
+/* TELEFON */
+
+@media(max-width:600px){
+
+  header{
+    padding:24px 15px;
+  }
+
+  header h1{
+    font-size:27px;
+  }
+
+  .grid{
+    grid-template-columns:1fr;
+    padding:20px 15px 40px;
+  }
+
+  .card img{
+    height:280px;
+  }
+
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>FIXY SNEAKERS</h1>
+  <p>Twoje miejsce na sneakersy</p>
+</header>
+
+<div class="section-title">
+  <h2>Aktualne oferty</h2>
+  <p>Sprawdź dostępne pary</p>
+</div>
+
+<div id="grid" class="grid"></div>
+
+<footer>
+  © 2026 FIXY SNEAKERS
+</footer>
+
+
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
-import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
+
+import { initializeApp }
+from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
+
+import {
+  getFirestore,
+  collection,
+  getDocs
+} from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
+
 import { firebaseConfig } from "./firebase.js";
-const app=initializeApp(firebaseConfig), db=getFirestore(app), grid=document.getElementById("grid");
-const snap=await getDocs(collection(db,"products"));
-snap.forEach(doc=>{const p=doc.data();grid.innerHTML+=`<div class=card><img src="${p.image}"><h3>${p.name}</h3><b>${p.price}</b><p>Rozmiar ${p.size}</p><a class=btn href="${p.link}" target=_blank>${p.platform}</a></div>`});
-</script></body></html>
+
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const grid = document.getElementById("grid");
+
+
+const snap = await getDocs(
+  collection(db,"products")
+);
+
+
+snap.forEach(doc => {
+
+  const p = doc.data();
+
+  grid.innerHTML += `
+
+    <div class="card">
+
+      <img
+        src="${p.image}"
+        alt="${p.name}"
+      >
+
+      <h3>${p.name}</h3>
+
+      <p class="price">
+        ${p.price}
+      </p>
+
+      <p class="size">
+        Rozmiar: ${p.size}
+      </p>
+
+      <a
+        class="btn"
+        href="${p.link}"
+        target="_blank"
+        rel="noopener"
+      >
+        ${p.platform || "Kup teraz"}
+      </a>
+
+    </div>
+
+  `;
+
+});
+
+</script>
+
+</body>
+</html>
