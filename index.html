@@ -1,0 +1,11 @@
+<!DOCTYPE html><html lang="pl"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>SneakerShop</title>
+<style>body{font-family:Arial;margin:0;background:#f4f4f4}header{background:#111;color:#fff;padding:18px}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;padding:20px}.card{background:#fff;border-radius:12px;padding:12px}img{width:100%;height:220px;object-fit:cover;border-radius:8px}.btn{display:block;background:#111;color:#fff;text-align:center;padding:10px;border-radius:8px;text-decoration:none}</style>
+</head><body><header><h2>👟 SneakerShop</h2></header><div id="grid" class="grid"></div>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
+import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
+import { firebaseConfig } from "./firebase.js";
+const app=initializeApp(firebaseConfig), db=getFirestore(app), grid=document.getElementById("grid");
+const snap=await getDocs(collection(db,"products"));
+snap.forEach(doc=>{const p=doc.data();grid.innerHTML+=`<div class=card><img src="${p.image}"><h3>${p.name}</h3><b>${p.price}</b><p>Rozmiar ${p.size}</p><a class=btn href="${p.link}" target=_blank>${p.platform}</a></div>`});
+</script></body></html>

@@ -1,0 +1,16 @@
+<!DOCTYPE html><html lang="pl"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Admin</title>
+<style>body{font-family:Arial;background:#f4f4f4;padding:20px;max-width:700px;margin:auto}input,select{width:100%;padding:10px;margin:8px 0}button{width:100%;padding:12px;background:#111;color:#fff;border:0;border-radius:8px}</style></head><body>
+<h2>Panel administratora</h2>
+<input id=name placeholder="Nazwa"><input id=price placeholder="Cena"><input id=size placeholder="Rozmiar"><input id=image placeholder="Link do zdjęcia">
+<select id=platform><option>Vinted</option><option>OLX</option><option>Allegro</option></select>
+<input id=link placeholder="Link do ogłoszenia"><button id=add>Dodaj produkt</button><p id=msg></p>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
+import { getFirestore, addDoc, collection } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
+import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
+import { firebaseConfig } from "./firebase.js";
+const app=initializeApp(firebaseConfig), db=getFirestore(app), auth=getAuth(app);
+const email=prompt("Email administratora"), pass=prompt("Hasło");
+await signInWithEmailAndPassword(auth,email,pass);
+add.onclick=async()=>{await addDoc(collection(db,"products"),{name:name.value,price:price.value,size:size.value,image:image.value,platform:platform.value,link:link.value});msg.textContent="Dodano!";};
+</script></body></html>
