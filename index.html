@@ -21,15 +21,11 @@ body{
   color:white;
 }
 
-
-/* NAGŁÓWEK */
-
 header{
   background:linear-gradient(90deg,#09090d,#16002c,#09090d);
   border-bottom:1px solid rgba(170,70,255,.35);
   padding:22px 20px;
   text-align:center;
-  position:relative;
 }
 
 header h1{
@@ -62,10 +58,7 @@ header p{
       rgba(0,70,110,.8)
     );
   border:1px solid rgba(170,70,255,.4);
-  box-shadow:
-    0 0 40px rgba(130,0,255,.15),
-    inset 0 0 50px rgba(0,180,255,.05);
-  overflow:hidden;
+  box-shadow:0 0 40px rgba(130,0,255,.15);
 }
 
 .hero h2{
@@ -94,7 +87,7 @@ header p{
   margin:25px auto 5px;
   padding:0 20px;
   display:grid;
-  grid-template-columns:repeat(4,1fr);
+  grid-template-columns:repeat(5,1fr);
   gap:14px;
 }
 
@@ -106,12 +99,19 @@ header p{
   text-align:center;
   font-weight:bold;
   transition:.2s;
+  cursor:pointer;
 }
 
 .category:hover{
   transform:translateY(-4px);
   border-color:#a83cff;
   box-shadow:0 0 20px rgba(168,60,255,.2);
+}
+
+.category.active{
+  border-color:#a83cff;
+  background:linear-gradient(145deg,#24103d,#111827);
+  box-shadow:0 0 20px rgba(168,60,255,.25);
 }
 
 .category .icon{
@@ -223,15 +223,23 @@ header p{
   border-radius:11px;
   text-decoration:none;
   font-weight:bold;
-  border:1px solid rgba(255,255,255,.15);
   transition:.2s;
-  box-shadow:0 4px 15px rgba(100,40,255,.25);
 }
 
 .btn:hover{
   transform:scale(1.02);
   background:linear-gradient(90deg,#a83cff,#36cfff);
-  box-shadow:0 5px 22px rgba(120,60,255,.4);
+}
+
+
+/* BRAK PRODUKTÓW */
+
+.empty{
+  max-width:1200px;
+  margin:20px auto 60px;
+  padding:40px 20px;
+  text-align:center;
+  color:#999;
 }
 
 
@@ -286,6 +294,10 @@ footer strong{
     padding:16px 10px;
   }
 
+  .category:first-child{
+    grid-column:span 2;
+  }
+
   .section-title{
     padding:30px 15px 5px;
   }
@@ -330,32 +342,58 @@ footer strong{
   </h2>
 
   <p>
-    Znajdź swoją kolejną parę i sprawdź dostępne oferty.
+    Buty, ubrania, bluzy i akcesoria.
   </p>
 
 </section>
 
 
+<!-- KATEGORIE -->
+
 <div class="categories">
 
-  <div class="category">
+  <div class="category active" data-category="all">
+
+    <span class="icon">🔥</span>
+
+    Wszystkie
+
+  </div>
+
+
+  <div class="category" data-category="buty">
+
     <span class="icon">👟</span>
+
     Buty
+
   </div>
 
-  <div class="category">
+
+  <div class="category" data-category="ubrania">
+
     <span class="icon">👕</span>
+
     Ubrania
+
   </div>
 
-  <div class="category">
+
+  <div class="category" data-category="bluzy">
+
     <span class="icon">🧥</span>
+
     Bluzy
+
   </div>
 
-  <div class="category">
+
+  <div class="category" data-category="akcesoria">
+
     <span class="icon">🧢</span>
+
     Akcesoria
+
   </div>
 
 </div>
@@ -364,7 +402,7 @@ footer strong{
 <div class="section-title">
 
   <h2>
-    🔥 <span>Aktualne</span> oferty
+    🔥 <span id="categoryTitle">Aktualne</span> oferty
   </h2>
 
   <p>
@@ -377,10 +415,19 @@ footer strong{
 <div id="grid" class="grid"></div>
 
 
+<div id="empty" class="empty" style="display:none;">
+
+  Brak produktów w tej kategorii.
+
+</div>
+
+
 <footer>
 
   © 2026 <strong>FIXY SNEAKERS</strong>
+
   <br><br>
+
   Sneakers • Streetwear • Style
 
 </footer>
@@ -409,8 +456,21 @@ const app = initializeApp(firebaseConfig);
 
 const db = getFirestore(app);
 
-const grid = document.getElementById("grid");
+const grid =
+  document.getElementById("grid");
 
+const empty =
+  document.getElementById("empty");
+
+const categoryTitle =
+  document.getElementById("categoryTitle");
+
+
+let products = [];
+
+
+
+/* POBIERANIE PRODUKTÓW */
 
 const snap = await getDocs(
   collection(db,"products")
@@ -419,44 +479,140 @@ const snap = await getDocs(
 
 snap.forEach(doc => {
 
-  const p = doc.data();
-
-
-  grid.innerHTML += `
-
-    <div class="card">
-
-      <img
-        src="${p.image}"
-        alt="${p.name}"
-      >
-
-      <h3>
-        ${p.name}
-      </h3>
-
-      <p class="price">
-        ${p.price}
-      </p>
-
-      <p class="size">
-        Rozmiar: ${p.size}
-      </p>
-
-      <a
-        class="btn"
-        href="${p.link}"
-        target="_blank"
-        rel="noopener"
-      >
-        KUP TERAZ NA OLX
-      </a>
-
-    </div>
-
-  `;
+  products.push(doc.data());
 
 });
+
+
+/* WYŚWIETLANIE PRODUKTÓW */
+
+function showProducts(category){
+
+  grid.innerHTML = "";
+
+  let filteredProducts;
+
+
+  if(category === "all"){
+
+    filteredProducts = products;
+
+    categoryTitle.textContent =
+      "Aktualne";
+
+  }else{
+
+    filteredProducts =
+      products.filter(
+        p => p.category === category
+      );
+
+
+    const names = {
+
+      buty:"Buty",
+
+      ubrania:"Ubrania",
+
+      bluzy:"Bluzy",
+
+      akcesoria:"Akcesoria"
+
+    };
+
+
+    categoryTitle.textContent =
+      names[category];
+
+  }
+
+
+  if(filteredProducts.length === 0){
+
+    empty.style.display = "block";
+
+    return;
+
+  }
+
+
+  empty.style.display = "none";
+
+
+  filteredProducts.forEach(p => {
+
+    grid.innerHTML += `
+
+      <div class="card">
+
+        <img
+          src="${p.image}"
+          alt="${p.name}"
+        >
+
+        <h3>
+          ${p.name}
+        </h3>
+
+        <p class="price">
+          ${p.price}
+        </p>
+
+        <p class="size">
+          Rozmiar: ${p.size}
+        </p>
+
+        <a
+          class="btn"
+          href="${p.link}"
+          target="_blank"
+          rel="noopener"
+        >
+          KUP TERAZ NA OLX
+        </a>
+
+      </div>
+
+    `;
+
+  });
+
+}
+
+
+/* KLIKANIE KATEGORII */
+
+document.querySelectorAll(".category")
+.forEach(button => {
+
+  button.addEventListener("click", () => {
+
+    document
+      .querySelectorAll(".category")
+      .forEach(item => {
+
+        item.classList.remove("active");
+
+      });
+
+
+    button.classList.add("active");
+
+
+    const category =
+      button.dataset.category;
+
+
+    showProducts(category);
+
+  });
+
+});
+
+
+/* START */
+
+showProducts("all");
 
 </script>
 
