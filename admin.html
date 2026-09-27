@@ -100,15 +100,36 @@ button:disabled{
 
   <input id="size" placeholder="Rozmiar">
 
+  <!-- KATEGORIA -->
+
+  <select id="category">
+
+    <option value="buty">👟 Buty</option>
+
+    <option value="ubrania">👕 Ubrania</option>
+
+    <option value="bluzy">🧥 Bluzy</option>
+
+    <option value="akcesoria">🧢 Akcesoria</option>
+
+  </select>
+
+
   <input id="imageFile" type="file" accept="image/*">
 
   <img id="preview">
 
+
   <select id="platform">
-    <option>Vinted</option>
+
     <option>OLX</option>
+
+    <option>Vinted</option>
+
     <option>Allegro</option>
+
   </select>
+
 
   <input id="link" placeholder="Link do ogłoszenia">
 
@@ -124,6 +145,7 @@ button:disabled{
 import { initializeApp }
 from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
 
+
 import {
   getFirestore,
   addDoc,
@@ -131,11 +153,13 @@ import {
 }
 from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
 
+
 import {
   getAuth,
   signInWithEmailAndPassword
 }
 from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
+
 
 import { firebaseConfig } from "./firebase.js";
 
@@ -147,14 +171,25 @@ const db = getFirestore(app);
 const auth = getAuth(app);
 
 
-const loginPanel = document.getElementById("loginPanel");
-const adminPanel = document.getElementById("adminPanel");
+const loginPanel =
+  document.getElementById("loginPanel");
 
-const email = document.getElementById("email");
-const password = document.getElementById("password");
+const adminPanel =
+  document.getElementById("adminPanel");
 
-const loginButton = document.getElementById("login");
-const loginMsg = document.getElementById("loginMsg");
+
+const email =
+  document.getElementById("email");
+
+const password =
+  document.getElementById("password");
+
+
+const loginButton =
+  document.getElementById("login");
+
+const loginMsg =
+  document.getElementById("loginMsg");
 
 
 /* LOGOWANIE */
@@ -163,7 +198,9 @@ loginButton.onclick = async () => {
 
   try {
 
-    loginMsg.textContent = "Logowanie...";
+    loginMsg.textContent =
+      "Logowanie...";
+
 
     await signInWithEmailAndPassword(
       auth,
@@ -171,10 +208,17 @@ loginButton.onclick = async () => {
       password.value
     );
 
-    loginMsg.textContent = "✅ Zalogowano";
 
-    loginPanel.style.display = "none";
-    adminPanel.style.display = "block";
+    loginMsg.textContent =
+      "✅ Zalogowano";
+
+
+    loginPanel.style.display =
+      "none";
+
+    adminPanel.style.display =
+      "block";
+
 
   } catch(error) {
 
@@ -189,38 +233,67 @@ loginButton.onclick = async () => {
 
 
 /* ELEMENTY FORMULARZA */
-const name = document.getElementById("name");
-const price = document.getElementById("price");
-const size = document.getElementById("size");
-const imageFile = document.getElementById("imageFile");
-const preview = document.getElementById("preview");
-const platform = document.getElementById("platform");
-const link = document.getElementById("link");
-const msg = document.getElementById("msg");
+
+const name =
+  document.getElementById("name");
+
+const price =
+  document.getElementById("price");
+
+const size =
+  document.getElementById("size");
+
+const category =
+  document.getElementById("category");
+
+const imageFile =
+  document.getElementById("imageFile");
+
+const preview =
+  document.getElementById("preview");
+
+const platform =
+  document.getElementById("platform");
+
+const link =
+  document.getElementById("link");
+
+const msg =
+  document.getElementById("msg");
+
 
 let imageData = "";
-
 
 
 /* WYBÓR ZDJĘCIA */
 
 imageFile.addEventListener("change", () => {
 
-  const file = imageFile.files[0];
+  const file =
+    imageFile.files[0];
 
   if (!file) return;
 
-  const reader = new FileReader();
+
+  const reader =
+    new FileReader();
+
 
   reader.onload = () => {
 
-    imageData = reader.result;
+    imageData =
+      reader.result;
 
-    preview.src = imageData;
 
-    preview.style.display = "block";
+    preview.src =
+      imageData;
+
+
+    preview.style.display =
+      "block";
 
   };
+
 
   reader.readAsDataURL(file);
 
@@ -229,25 +302,30 @@ imageFile.addEventListener("change", () => {
 
 /* DODAWANIE PRODUKTU */
 
-document.getElementById("add").onclick = async () => {
+document.getElementById("add").onclick =
+async () => {
 
   try {
 
     if (!auth.currentUser) {
 
-      msg.textContent = "❌ Najpierw się zaloguj.";
+      msg.textContent =
+        "❌ Najpierw się zaloguj.";
 
       return;
 
     }
+
 
     if (!imageData) {
 
-      msg.textContent = "❌ Wybierz zdjęcie.";
+      msg.textContent =
+        "❌ Wybierz zdjęcie.";
 
       return;
 
     }
+
 
     if (
       !name.value.trim() ||
@@ -263,24 +341,35 @@ document.getElementById("add").onclick = async () => {
 
     }
 
-    msg.textContent = "Dodawanie produktu...";
+
+    msg.textContent =
+      "Dodawanie produktu...";
 
 
     await addDoc(
       collection(db,"products"),
       {
 
-        name: name.value.trim(),
+        name:
+          name.value.trim(),
 
-        price: price.value.trim(),
+        price:
+          price.value.trim(),
 
-        size: size.value.trim(),
+        size:
+          size.value.trim(),
 
-        image: imageData,
+        category:
+          category.value,
 
-        platform: platform.value,
+        image:
+          imageData,
 
-        link: link.value.trim()
+        platform:
+          platform.value,
+
+        link:
+          link.value.trim()
 
       }
     );
@@ -291,8 +380,11 @@ document.getElementById("add").onclick = async () => {
 
 
     name.value = "";
+
     price.value = "";
+
     size.value = "";
+
     link.value = "";
 
     imageFile.value = "";
@@ -301,7 +393,8 @@ document.getElementById("add").onclick = async () => {
 
     preview.src = "";
 
-    preview.style.display = "none";
+    preview.style.display =
+      "none";
 
 
   } catch(error) {
